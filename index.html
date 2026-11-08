@@ -1,35 +1,953 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#2563eb"><meta name="description" content="TaskNote - catatan tugas sekolah sederhana"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><link rel="apple-touch-icon" href="icon.svg"><link rel="manifest" href="manifest.webmanifest"><title>TaskNote — Catatan Tugas</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#2563eb">
+<meta name="description" content="TaskNote - Aplikasi tugas sekolah bersama">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="manifest" href="manifest.webmanifest">
+<title>TaskNote — Tugas Kelas</title>
+
 <style>
-:root{font-family:Inter,system-ui,Arial,sans-serif;color:#172033;background:#f3f6fb}*{box-sizing:border-box}body{margin:0}.wrap{max-width:900px;margin:auto;padding:24px 16px 50px}.head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px}.brand{font-size:27px;font-weight:800;letter-spacing:-1px}.brand span{color:#2563eb}.sub{color:#667085;font-size:14px;margin-top:3px}.panel{background:white;border:1px solid #e5eaf2;border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:0 4px 18px #17203308}.stats{display:flex;gap:10px;flex-wrap:wrap}.stat{flex:1;min-width:100px;background:#f7f9fc;border-radius:12px;padding:12px}.stat b{display:block;font-size:23px}.stat small{color:#667085}.progress{height:8px;background:#e8edf5;border-radius:20px;overflow:hidden;margin-top:12px}.progress>div{height:100%;background:#2563eb;width:0;transition:width .2s}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}label{font-size:13px;font-weight:650;color:#475467;display:block;margin-bottom:6px}input,select,textarea{width:100%;border:1px solid #d8dfeb;border-radius:10px;padding:11px 12px;font:inherit;background:#fff;color:#172033}textarea{resize:vertical;min-height:75px}.span2{grid-column:1/-1}.dateparts{display:grid;grid-template-columns:1fr 1.3fr 1.3fr;gap:8px}.btn{border:0;border-radius:10px;padding:11px 15px;font:inherit;font-weight:700;cursor:pointer}.primary{background:#2563eb;color:#fff}.secondary{background:#edf2fa;color:#344054}.danger{background:#fff0f0;color:#c62828}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.toolbar{display:flex;gap:10px;flex-wrap:wrap}.toolbar input{flex:1;min-width:170px}.toolbar select{width:auto;min-width:130px}.task{display:flex;gap:12px;align-items:flex-start;padding:14px 2px;border-bottom:1px solid #edf0f5}.task:last-child{border-bottom:0}.task input[type=checkbox]{width:20px;height:20px;margin:3px 0 0;accent-color:#2563eb;flex-shrink:0}.taskmain{flex:1;min-width:0}.tasktitle{font-weight:750;overflow-wrap:anywhere}.done .tasktitle{text-decoration:line-through;color:#98a2b3}.meta{font-size:12px;color:#667085;margin-top:5px;display:flex;gap:8px;flex-wrap:wrap}.desc{font-size:13px;color:#475467;margin-top:6px;white-space:pre-wrap;overflow-wrap:anywhere}.taskbuttons{display:flex;gap:6px}.taskbuttons button{padding:7px 9px;font-size:12px}.empty{text-align:center;color:#667085;padding:28px 10px}.hint{font-size:12px;color:#667085;margin-top:8px}.hidden{display:none!important}@media(max-width:600px){.formgrid{grid-template-columns:1fr}.span2{grid-column:auto}.head{align-items:flex-start}.brand{font-size:24px}.taskbuttons{flex-direction:column}}
-</style></head><body><main class="wrap">
-<header class="head"><div><div class="brand">Task<span>Note</span></div><div class="sub">Catat tugas. Atur deadline. Selesaikan satu per satu.</div></div><button id="installBtn" class="btn secondary hidden">Pasang aplikasi</button></header>
-<section class="panel"><div class="stats"><div class="stat"><b id="total">0</b><small>Total tugas</small></div><div class="stat"><b id="pending">0</b><small>Belum selesai</small></div><div class="stat"><b id="completed">0</b><small>Selesai</small></div></div><div class="progress"><div id="progressBar"></div></div><div class="hint" id="progressText">0% selesai</div></section>
-<section class="panel"><h2 id="formTitle" style="margin:0 0 15px;font-size:18px">＋ Tambah tugas</h2><form id="taskForm"><div class="formgrid">
-<div><label for="subject">Mata pelajaran</label><input id="subject" maxlength="50" placeholder="Contoh: Matematika" required></div>
-<div><label for="title">Nama tugas</label><input id="title" maxlength="100" placeholder="Contoh: Latihan halaman 20" required></div>
-<div><label>Deadline (boleh dikosongkan)</label><div class="dateparts"><select id="day"><option value="">Tanggal</option></select><select id="month"><option value="">Bulan</option></select><select id="year"><option value="">Tahun</option></select></div></div>
-<div><label for="priority">Prioritas</label><select id="priority"><option>Biasa</option><option>Penting</option><option>Mendesak</option></select></div>
-<div class="span2"><label for="description">Keterangan (opsional)</label><textarea id="description" maxlength="500" placeholder="Catatan tambahan..."></textarea></div></div><div class="actions"><button class="btn primary" type="submit" id="saveBtn">Simpan tugas</button><button class="btn secondary hidden" type="button" id="cancelBtn">Batal edit</button></div><div class="hint">Tanggal deadline dipilih manual. Data tersimpan di browser/perangkat ini.</div></form></section>
-<section class="panel"><div class="toolbar"><input id="search" placeholder="Cari tugas atau mata pelajaran..."><select id="filter"><option value="all">Semua tugas</option><option value="pending">Belum selesai</option><option value="done">Selesai</option></select><select id="sort"><option value="deadline">Urut deadline</option><option value="newest">Terbaru ditambahkan</option><option value="priority">Prioritas</option></select></div><div id="tasks" style="margin-top:12px"></div></section>
-<footer class="hint" style="text-align:center">TaskNote · Data tersimpan lokal di perangkat yang digunakan.</footer></main>
+:root {
+  font-family: Inter, system-ui, Arial, sans-serif;
+  color: #172033;
+  background: #f3f6fb;
+  font-synthesis: none;
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+.wrap { max-width: 1000px; margin: auto; padding: 24px 16px 50px; }
+.head {
+  display: flex; justify-content: space-between;
+  align-items: center; gap: 12px; margin-bottom: 20px;
+}
+.brand { font-size: 28px; font-weight: 850; letter-spacing: -1px; }
+.brand span { color: #2563eb; }
+.sub { color: #667085; font-size: 13px; margin-top: 3px; }
+.panel {
+  background: white; border: 1px solid #e5eaf2;
+  border-radius: 18px; padding: 20px; margin-bottom: 16px;
+  box-shadow: 0 5px 20px #17203308;
+}
+h2 { font-size: 18px; margin: 0 0 16px; }
+h3 { font-size: 15px; margin: 0 0 12px; }
+label {
+  display: block; font-size: 13px; font-weight: 700;
+  color: #475467; margin-bottom: 6px;
+}
+input, select, textarea {
+  width: 100%; border: 1px solid #d8dfeb;
+  border-radius: 11px; padding: 12px;
+  background: white; color: #172033;
+  outline: none;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px #2563eb18;
+}
+textarea { min-height: 80px; resize: vertical; }
+.formgrid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 13px;
+}
+.span2 { grid-column: 1 / -1; }
+.field { min-width: 0; }
+.btn {
+  border: 0; border-radius: 11px; padding: 11px 15px;
+  font-weight: 750; font-size: 13px;
+}
+.primary { background: #2563eb; color: white; }
+.secondary { background: #edf2fa; color: #344054; }
+.danger { background: #fff0f0; color: #c62828; }
+.success { background: #e9f8ef; color: #167342; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.stats { display: flex; flex-wrap: wrap; gap: 10px; }
+.stat {
+  flex: 1; min-width: 110px; padding: 14px;
+  background: #f7f9fc; border-radius: 13px;
+}
+.stat b { display: block; font-size: 25px; }
+.stat small { color: #667085; }
+.progress {
+  height: 9px; background: #e8edf5;
+  border-radius: 20px; overflow: hidden; margin-top: 13px;
+}
+.progress div {
+  height: 100%; background: #2563eb;
+  width: 0; transition: width .2s;
+}
+.toolbar { display: flex; gap: 9px; flex-wrap: wrap; }
+.toolbar input { flex: 1; min-width: 180px; }
+.toolbar select { width: auto; min-width: 130px; }
+.task {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 15px 2px; border-bottom: 1px solid #edf0f5;
+}
+.task:last-child { border-bottom: 0; }
+.task input[type=checkbox] {
+  width: 20px; height: 20px; margin: 3px 0 0;
+  accent-color: #2563eb; flex-shrink: 0;
+}
+.taskmain { flex: 1; min-width: 0; }
+.tasktitle { font-weight: 800; overflow-wrap: anywhere; }
+.done .tasktitle { text-decoration: line-through; color: #98a2b3; }
+.meta {
+  font-size: 12px; color: #667085;
+  display: flex; gap: 8px; flex-wrap: wrap; margin-top: 5px;
+}
+.desc {
+  font-size: 13px; color: #475467;
+  margin-top: 7px; white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.taskbuttons { display: flex; gap: 6px; }
+.taskbuttons button { padding: 7px 10px; font-size: 12px; }
+.empty { text-align: center; color: #667085; padding: 30px 10px; }
+.hint { color: #667085; font-size: 12px; margin-top: 8px; }
+.message { font-size: 13px; margin-top: 12px; white-space: pre-wrap; }
+.hidden { display: none !important; }
+.badge {
+  display: inline-block; border-radius: 20px;
+  padding: 4px 9px; font-size: 11px;
+  font-weight: 800; background: #edf2fa; color: #344054;
+}
+.topline {
+  display: flex; justify-content: space-between;
+  align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.userinfo { color: #667085; font-size: 13px; }
+hr { border: 0; border-top: 1px solid #edf0f5; margin: 18px 0; }
+footer { text-align: center; color: #98a2b3; font-size: 12px; padding: 20px; }
+
+@media(max-width:650px) {
+  .formgrid { grid-template-columns: 1fr; }
+  .span2 { grid-column: auto; }
+  .head { align-items: flex-start; }
+  .brand { font-size: 25px; }
+  .taskbuttons { flex-direction: column; }
+  .panel { padding: 16px; }
+}
+</style>
+</head>
+
+<body>
+<main class="wrap">
+
+<header class="head">
+  <div>
+    <div class="brand">Task<span>Note</span></div>
+    <div class="sub">Satu kelas, satu tempat untuk mengatur tugas.</div>
+  </div>
+  <button id="installBtn" class="btn secondary hidden">Pasang aplikasi</button>
+</header>
+
+<!-- LOGIN -->
+<section id="loginPanel" class="panel">
+  <h2>Selamat datang di TaskNote 👋</h2>
+  <p class="hint">Masuk menggunakan akun yang sudah diberikan administrator.</p>
+
+  <form id="loginForm">
+    <div class="field">
+      <label for="loginEmail">Email</label>
+      <input id="loginEmail" type="email" autocomplete="username" required placeholder="nama@email.com">
+    </div>
+    <div class="field" style="margin-top:12px">
+      <label for="loginPassword">Kata sandi</label>
+      <input id="loginPassword" type="password" autocomplete="current-password" required placeholder="Kata sandi">
+    </div>
+    <div class="actions">
+      <button class="btn primary" type="submit" id="loginBtn">Masuk</button>
+      <button class="btn secondary" type="button" id="forgotBtn">Lupa kata sandi?</button>
+    </div>
+  </form>
+  <div id="loginMessage" class="message" role="status"></div>
+</section>
+
+<!-- RESET PASSWORD -->
+<section id="resetPanel" class="panel hidden">
+  <h2>Atur ulang kata sandi</h2>
+  <p class="hint">Masukkan kata sandi baru untuk akunmu.</p>
+  <form id="resetForm">
+    <div class="field">
+      <label for="newPassword">Kata sandi baru</label>
+      <input id="newPassword" type="password" minlength="8" autocomplete="new-password" required>
+    </div>
+    <div class="field" style="margin-top:12px">
+      <label for="confirmPassword">Ulangi kata sandi</label>
+      <input id="confirmPassword" type="password" minlength="8" autocomplete="new-password" required>
+    </div>
+    <div class="actions">
+      <button class="btn primary" type="submit">Simpan kata sandi</button>
+    </div>
+  </form>
+  <div id="resetMessage" class="message" role="status"></div>
+</section>
+
+<!-- APLIKASI -->
+<div id="appPanel" class="hidden">
+
+  <section class="panel">
+    <div class="topline">
+      <div>
+        <h2 style="margin-bottom:5px">Dashboard</h2>
+        <div class="userinfo" id="userInfo">Memuat akun...</div>
+      </div>
+      <div class="actions" style="margin:0">
+        <button id="refreshBtn" class="btn secondary">↻ Perbarui</button>
+        <button id="logoutBtn" class="btn danger">Keluar</button>
+      </div>
+    </div>
+    <hr>
+    <div class="stats">
+      <div class="stat"><b id="total">0</b><small>Total tugas</small></div>
+      <div class="stat"><b id="pending">0</b><small>Belum selesai</small></div>
+      <div class="stat"><b id="completed">0</b><small>Selesai oleh saya</small></div>
+    </div>
+    <div class="progress"><div id="progressBar"></div></div>
+    <div class="hint" id="progressText">0% selesai</div>
+  </section>
+
+  <!-- ADMIN -->
+  <section id="adminPanel" class="panel hidden">
+    <h2>⚙️ Administrasi akun</h2>
+    <p class="hint">Administrator dapat mengundang sekretaris dan anggota melalui email.</p>
+
+    <form id="inviteForm">
+      <div class="formgrid">
+        <div class="field">
+          <label for="inviteName">Nama pengguna</label>
+          <input id="inviteName" maxlength="80" required placeholder="Nama lengkap">
+        </div>
+        <div class="field">
+          <label for="inviteEmail">Email pengguna</label>
+          <input id="inviteEmail" type="email" required placeholder="email pengguna">
+        </div>
+        <div class="field">
+          <label for="inviteRole">Peran akun</label>
+          <select id="inviteRole">
+            <option value="member">Anggota kelas</option>
+            <option value="secretary">Sekretaris</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="inviteClass">Kelas</label>
+          <select id="inviteClass" required></select>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn primary" type="submit" id="inviteBtn">Kirim undangan</button>
+      </div>
+    </form>
+    <div id="inviteMessage" class="message" role="status"></div>
+  </section>
+
+  <!-- SEKRETARIS / ADMIN: FORM TUGAS -->
+  <section id="taskFormPanel" class="panel hidden">
+    <h2 id="taskFormTitle">＋ Tambah tugas kelas</h2>
+    <form id="taskForm">
+      <div class="formgrid">
+        <div class="field">
+          <label for="subject">Mata pelajaran</label>
+          <input id="subject" maxlength="60" required placeholder="Contoh: Matematika">
+        </div>
+        <div class="field">
+          <label for="title">Nama tugas</label>
+          <input id="title" maxlength="120" required placeholder="Contoh: Latihan halaman 20">
+        </div>
+        <div class="field">
+          <label for="deadline">Deadline</label>
+          <input id="deadline" type="date">
+        </div>
+        <div class="field">
+          <label for="priority">Prioritas</label>
+          <select id="priority">
+            <option value="Biasa">Biasa</option>
+            <option value="Penting">Penting</option>
+            <option value="Mendesak">Mendesak</option>
+          </select>
+        </div>
+        <div class="field span2">
+          <label for="description">Keterangan</label>
+          <textarea id="description" maxlength="1000" placeholder="Catatan tambahan (opsional)"></textarea>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn primary" type="submit" id="saveTaskBtn">Simpan tugas</button>
+        <button class="btn secondary hidden" type="button" id="cancelEditBtn">Batal edit</button>
+      </div>
+    </form>
+    <div id="taskMessage" class="message" role="status"></div>
+  </section>
+
+  <!-- DAFTAR TUGAS -->
+  <section class="panel">
+    <div class="topline" style="margin-bottom:14px">
+      <h2 style="margin:0">📚 Daftar tugas kelas</h2>
+      <span class="badge" id="roleBadge">MEMBER</span>
+    </div>
+    <div class="toolbar">
+      <input id="search" placeholder="Cari tugas atau mata pelajaran...">
+      <select id="filter">
+        <option value="all">Semua tugas</option>
+        <option value="pending">Belum selesai</option>
+        <option value="done">Selesai oleh saya</option>
+      </select>
+      <select id="sort">
+        <option value="deadline">Urut deadline</option>
+        <option value="newest">Terbaru</option>
+        <option value="priority">Prioritas</option>
+      </select>
+    </div>
+    <div id="tasks" style="margin-top:12px">
+      <div class="empty">Memuat tugas...</div>
+    </div>
+  </section>
+
+  <!-- BACKUP -->
+  <section class="panel">
+    <h2>💾 Cadangan data</h2>
+    <p class="hint">Unduh salinan tugas dan progres akunmu sebagai file JSON.</p>
+    <div class="actions">
+      <button id="exportBtn" class="btn secondary">Ekspor cadangan</button>
+    </div>
+    <div id="backupMessage" class="message" role="status"></div>
+  </section>
+
+</div>
+
+<footer>TaskNote · Kelola tugas bersama dengan lebih mudah.</footer>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
-const $=id=>document.getElementById(id), KEY='tasknote_school_v4';let tasks=[],editing=null,seq=0;
-const months=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-for(let d=1;d<=31;d++)$('day').add(new Option(d,d));months.forEach((m,i)=>$('month').add(new Option(m,i+1)));for(let y=new Date().getFullYear()-1;y<=new Date().getFullYear()+10;y++)$('year').add(new Option(y,y));
-function load(){try{const x=JSON.parse(localStorage.getItem(KEY)||'[]');tasks=Array.isArray(x)?x:[]}catch{tasks=[]}}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(tasks))}catch{alert('Penyimpanan browser penuh atau dinonaktifkan.')} }
-function deadlineFromForm(){let d=$('day').value,m=$('month').value,y=$('year').value;if(!d&&!m&&!y)return '';if(!d||!m||!y)throw Error('Pilih tanggal, bulan, dan tahun lengkap atau kosongkan semuanya.');let date=new Date(+y,+m-1,+d);if(date.getFullYear()!=+y||date.getMonth()!=+m-1||date.getDate()!=+d)throw Error('Tanggal yang dipilih tidak valid.');return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`}
-function pretty(s){if(!s)return 'Tanpa deadline';let [y,m,d]=s.split('-');return `${+d} ${months[+m-1]} ${y}`}
-function reset(){editing=null;$('taskForm').reset();$('formTitle').textContent='＋ Tambah tugas';$('saveBtn').textContent='Simpan tugas';$('cancelBtn').classList.add('hidden')}
-$('taskForm').addEventListener('submit',e=>{e.preventDefault();let deadline;try{deadline=deadlineFromForm()}catch(err){alert(err.message);return}let item={subject:$('subject').value.trim(),title:$('title').value.trim(),description:$('description').value.trim(),priority:$('priority').value,deadline,done:false,created:Date.now()};if(!item.subject||!item.title)return;if(editing!==null){let old=tasks.find(t=>t.id===editing);if(old){Object.assign(old,item,{done:old.done,created:old.created})}}else tasks.unshift({...item,id:Date.now().toString(36)+Math.random().toString(36).slice(2,7)});save();reset();render()});
-$('cancelBtn').onclick=reset;
-function editTask(id){let t=tasks.find(x=>x.id===id);if(!t)return;editing=id;$('subject').value=t.subject;$('title').value=t.title;$('description').value=t.description;$('priority').value=t.priority;$('day').value=t.deadline?String(+t.deadline.slice(8)):'';$('month').value=t.deadline?String(+t.deadline.slice(5,7)):'';$('year').value=t.deadline?t.deadline.slice(0,4):'';$('formTitle').textContent='✎ Edit tugas';$('saveBtn').textContent='Simpan perubahan';$('cancelBtn').classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'})}
-function removeTask(id){if(!confirm('Hapus tugas ini?'))return;tasks=tasks.filter(t=>t.id!==id);if(editing===id)reset();save();render()}
-function toggleTask(id,done){let t=tasks.find(x=>x.id===id);if(t){t.done=done;save();render()}}
-function render(){let total=tasks.length,done=tasks.filter(t=>t.done).length,pending=total-done,pct=total?Math.round(done/total*100):0;$('total').textContent=total;$('pending').textContent=pending;$('completed').textContent=done;$('progressBar').style.width=pct+'%';$('progressText').textContent=pct+'% selesai';let q=$('search').value.toLowerCase(),f=$('filter').value,s=$('sort').value;let list=tasks.filter(t=>(f==='all'||(f==='done'?t.done:!t.done))&&[t.subject,t.title,t.description].join(' ').toLowerCase().includes(q));list.sort((a,b)=>s==='newest'?b.created-a.created:s==='priority'?['Mendesak','Penting','Biasa'].indexOf(a.priority)-['Mendesak','Penting','Biasa'].indexOf(b.priority):((a.deadline||'9999').localeCompare(b.deadline||'9999')));let root=$('tasks');root.replaceChildren();if(!list.length){let p=document.createElement('div');p.className='empty';p.textContent=tasks.length?'Tidak ada tugas yang cocok.':'Belum ada tugas. Tambahkan tugas pertamamu di atas.';root.append(p);return}for(let t of list){let row=document.createElement('div');row.className='task'+(t.done?' done':'');let cb=document.createElement('input');cb.type='checkbox';cb.checked=t.done;cb.setAttribute('aria-label','Tandai selesai');cb.onchange=()=>toggleTask(t.id,cb.checked);let main=document.createElement('div');main.className='taskmain';let title=document.createElement('div');title.className='tasktitle';title.textContent=t.title;let meta=document.createElement('div');meta.className='meta';[t.subject,'Deadline: '+pretty(t.deadline),'Prioritas: '+t.priority].forEach(v=>{let span=document.createElement('span');span.textContent=v;meta.append(span)});main.append(title,meta);if(t.description){let desc=document.createElement('div');desc.className='desc';desc.textContent=t.description;main.append(desc)}let buttons=document.createElement('div');buttons.className='taskbuttons';let eb=document.createElement('button');eb.className='btn secondary';eb.textContent='Edit';eb.onclick=()=>editTask(t.id);let db=document.createElement('button');db.className='btn danger';db.textContent='Hapus';db.onclick=()=>removeTask(t.id);buttons.append(eb,db);row.append(cb,main,buttons);root.append(row)}}
-['search','filter','sort'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',render));load();render();
-let installPrompt=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;$('installBtn').classList.remove('hidden')});$('installBtn').onclick=async()=>{if(!installPrompt)return;installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;$('installBtn').classList.add('hidden')};if('serviceWorker'in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
-</script></body></html>
+/* ==========================================
+   KONFIGURASI SUPABASE
+   Publishable key aman digunakan di frontend.
+   JANGAN memasukkan service_role key di sini.
+========================================== */
+
+const SUPABASE_URL = 'https://uyzjmuqdcmshqeqbvnlm.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_BhPgrRifATJzZcBmSYNzZw_yhI0V3cM';
+
+const sb = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY,
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true
+    }
+  }
+);
+
+const $ = id => document.getElementById(id);
+
+let currentUser = null;
+let profile = null;
+let classes = [];
+let tasks = [];
+let completions = [];
+let editingTaskId = null;
+let recoveryMode = false;
+
+const LEGACY_KEY = 'tasknote_school_v4';
+
+function showMessage(id, message, isError = false) {
+  const el = $(id);
+  if (!el) return;
+  el.textContent = message;
+  el.style.color = isError ? '#c62828' : '#167342';
+}
+
+function roleName(role) {
+  return ({
+    admin: 'Administrator',
+    secretary: 'Sekretaris',
+    member: 'Anggota'
+  })[role] || role;
+}
+
+function prettyDate(value) {
+  if (!value) return 'Tanpa deadline';
+  const d = new Date(value + 'T00:00:00');
+  return d.toLocaleDateString('id-ID', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
+}
+
+function canManageTasks() {
+  return profile && ['admin', 'secretary'].includes(profile.role);
+}
+
+function setLoggedOut() {
+  $('loginPanel').classList.remove('hidden');
+  $('appPanel').classList.add('hidden');
+  $('resetPanel').classList.add('hidden');
+}
+
+function setLoggedIn() {
+  $('loginPanel').classList.add('hidden');
+  $('resetPanel').classList.add('hidden');
+  $('appPanel').classList.remove('hidden');
+}
+
+async function loadProfile() {
+  const { data, error } = await sb
+    .from('profiles')
+    .select('id, role, class_id, display_name, disabled')
+    .eq('id', currentUser.id)
+    .single();
+
+  if (error) throw error;
+  if (!data) throw new Error('Profil akun tidak ditemukan.');
+  if (data.disabled) throw new Error('Akun ini telah dinonaktifkan.');
+
+  profile = data;
+}
+
+async function loadClasses() {
+  const { data, error } = await sb
+    .from('classes')
+    .select('id, name')
+    .order('name');
+
+  if (error) throw error;
+  classes = data || [];
+
+  const select = $('inviteClass');
+  select.replaceChildren();
+
+  classes.forEach(c => {
+    const option = document.createElement('option');
+    option.value = c.id;
+    option.textContent = c.name;
+    select.append(option);
+  });
+
+  if (profile && profile.class_id) {
+    select.value = profile.class_id;
+  }
+}
+
+async function loadTasks() {
+  let query = sb
+    .from('tasks')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (profile.class_id) {
+    query = query.eq('class_id', profile.class_id);
+  }
+
+  const { data, error } = await query;
+  if (error) throw error;
+  tasks = data || [];
+
+  const { data: progressData, error: progressError } = await sb
+    .from('task_completions')
+    .select('task_id, user_id, done')
+    .eq('user_id', currentUser.id);
+
+  if (progressError) throw progressError;
+  completions = progressData || [];
+
+  render();
+}
+
+function isTaskDone(taskId) {
+  return completions.some(
+    c => c.task_id === taskId && c.done === true
+  );
+}
+
+function render() {
+  const doneCount = tasks.filter(t => isTaskDone(t.id)).length;
+  const total = tasks.length;
+  const pending = total - doneCount;
+  const percent = total ? Math.round(doneCount / total * 100) : 0;
+
+  $('total').textContent = total;
+  $('pending').textContent = pending;
+  $('completed').textContent = doneCount;
+  $('progressBar').style.width = percent + '%';
+  $('progressText').textContent = percent + '% tugas selesai oleh akunmu';
+
+  const query = $('search').value.toLowerCase().trim();
+  const filter = $('filter').value;
+  const sort = $('sort').value;
+
+  let list = tasks.filter(t => {
+    const done = isTaskDone(t.id);
+    const matchesFilter =
+      filter === 'all' ||
+      (filter === 'done' && done) ||
+      (filter === 'pending' && !done);
+
+    const text = [
+      t.subject, t.title, t.description
+    ].join(' ').toLowerCase();
+
+    return matchesFilter && text.includes(query);
+  });
+
+  list.sort((a, b) => {
+    if (sort === 'newest') {
+      return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+    }
+    if (sort === 'priority') {
+      const p = { Mendesak: 0, Penting: 1, Biasa: 2 };
+      return (p[a.priority] ?? 3) - (p[b.priority] ?? 3);
+    }
+    return (a.deadline || '9999').localeCompare(b.deadline || '9999');
+  });
+
+  const root = $('tasks');
+  root.replaceChildren();
+
+  if (!list.length) {
+    const empty = document.createElement('div');
+    empty.className = 'empty';
+    empty.textContent = tasks.length
+      ? 'Tidak ada tugas yang cocok dengan pencarian.'
+      : 'Belum ada tugas untuk kelas ini.';
+    root.append(empty);
+    return;
+  }
+
+  list.forEach(task => {
+    const done = isTaskDone(task.id);
+
+    const row = document.createElement('div');
+    row.className = 'task' + (done ? ' done' : '');
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = done;
+    checkbox.setAttribute('aria-label', 'Tandai tugas selesai');
+    checkbox.addEventListener('change', () => {
+      setCompletion(task.id, checkbox.checked);
+    });
+
+    const main = document.createElement('div');
+    main.className = 'taskmain';
+
+    const title = document.createElement('div');
+    title.className = 'tasktitle';
+    title.textContent = task.title;
+
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+
+    [
+      task.subject,
+      'Deadline: ' + prettyDate(task.deadline),
+      'Prioritas: ' + task.priority
+    ].forEach(value => {
+      const span = document.createElement('span');
+      span.textContent = value;
+      meta.append(span);
+    });
+
+    main.append(title, meta);
+
+    if (task.description) {
+      const desc = document.createElement('div');
+      desc.className = 'desc';
+      desc.textContent = task.description;
+      main.append(desc);
+    }
+
+    const buttons = document.createElement('div');
+    buttons.className = 'taskbuttons';
+
+    if (canManageTasks()) {
+      const edit = document.createElement('button');
+      edit.className = 'btn secondary';
+      edit.textContent = 'Edit';
+      edit.addEventListener('click', () => editTask(task));
+
+      const remove = document.createElement('button');
+      remove.className = 'btn danger';
+      remove.textContent = 'Hapus';
+      remove.addEventListener('click', () => deleteTask(task.id));
+
+      buttons.append(edit, remove);
+    }
+
+    row.append(checkbox, main, buttons);
+    root.append(row);
+  });
+}
+
+/* ==========================================
+   LOGIN DAN PEMULIHAN KATA SANDI
+========================================== */
+
+$('loginForm').addEventListener('submit', async event => {
+  event.preventDefault();
+
+  const button = $('loginBtn');
+  button.disabled = true;
+  button.textContent = 'Memeriksa...';
+  showMessage('loginMessage', '');
+
+  const { error } = await sb.auth.signInWithPassword({
+    email: $('loginEmail').value.trim(),
+    password: $('loginPassword').value
+  });
+
+  button.disabled = false;
+  button.textContent = 'Masuk';
+
+  if (error) {
+    showMessage('loginMessage', error.message, true);
+  }
+});
+
+$('forgotBtn').addEventListener('click', async () => {
+  const email = $('loginEmail').value.trim();
+
+  if (!email) {
+    showMessage('loginMessage', 'Masukkan email terlebih dahulu.', true);
+    return;
+  }
+
+  const { error } = await sb.auth.resetPasswordForEmail(email, {
+    redirectTo: location.origin + location.pathname
+  });
+
+  if (error) {
+    showMessage('loginMessage', error.message, true);
+  } else {
+    showMessage('loginMessage', 'Email pemulihan telah diminta. Periksa kotak masuk emailmu.');
+  }
+});
+
+$('resetForm').addEventListener('submit', async event => {
+  event.preventDefault();
+
+  const password = $('newPassword').value;
+  const confirm = $('confirmPassword').value;
+
+  if (password.length < 8) {
+    showMessage('resetMessage', 'Kata sandi minimal 8 karakter.', true);
+    return;
+  }
+
+  if (password !== confirm) {
+    showMessage('resetMessage', 'Konfirmasi kata sandi tidak cocok.', true);
+    return;
+  }
+
+  const { error } = await sb.auth.updateUser({ password });
+
+  if (error) {
+    showMessage('resetMessage', error.message, true);
+  } else {
+    showMessage('resetMessage', 'Kata sandi berhasil diperbarui. Silakan masuk kembali.');
+    await sb.auth.signOut();
+  }
+});
+
+/* ==========================================
+   ADMIN: UNDANG AKUN
+========================================== */
+
+$('inviteForm').addEventListener('submit', async event => {
+  event.preventDefault();
+
+  if (!profile || profile.role !== 'admin') {
+    showMessage('inviteMessage', 'Hanya administrator yang dapat mengundang akun.', true);
+    return;
+  }
+
+  const button = $('inviteBtn');
+  button.disabled = true;
+  button.textContent = 'Mengirim...';
+  showMessage('inviteMessage', '');
+
+  const payload = {
+    email: $('inviteEmail').value.trim(),
+    display_name: $('inviteName').value.trim(),
+    role: $('inviteRole').value,
+    class_id: $('inviteClass').value
+  };
+
+  const { data, error } = await sb.functions.invoke('admin-create-user', {
+    body: payload
+  });
+
+  button.disabled = false;
+  button.textContent = 'Kirim undangan';
+
+  if (error) {
+    showMessage('inviteMessage', 'Gagal mengirim undangan: ' + error.message, true);
+    return;
+  }
+
+  showMessage('inviteMessage', 'Undangan berhasil diproses. Minta pengguna memeriksa emailnya.');
+  $('inviteForm').reset();
+  await loadClasses();
+});
+
+/* ==========================================
+   SEKRETARIS / ADMIN: KELOLA TUGAS
+========================================== */
+
+function resetTaskForm() {
+  editingTaskId = null;
+  $('taskForm').reset();
+  $('taskFormTitle').textContent = '＋ Tambah tugas kelas';
+  $('saveTaskBtn').textContent = 'Simpan tugas';
+  $('cancelEditBtn').classList.add('hidden');
+}
+
+function editTask(task) {
+  editingTaskId = task.id;
+  $('subject').value = task.subject || '';
+  $('title').value = task.title || '';
+  $('description').value = task.description || '';
+  $('deadline').value = task.deadline || '';
+  $('priority').value = task.priority || 'Biasa';
+
+  $('taskFormTitle').textContent = '✎ Edit tugas';
+  $('saveTaskBtn').textContent = 'Simpan perubahan';
+  $('cancelEditBtn').classList.remove('hidden');
+
+  $('taskFormPanel').scrollIntoView({ behavior: 'smooth' });
+}
+
+$('cancelEditBtn').addEventListener('click', resetTaskForm);
+
+$('taskForm').addEventListener('submit', async event => {
+  event.preventDefault();
+
+  if (!canManageTasks()) return;
+
+  const payload = {
+    class_id: profile.class_id,
+    subject: $('subject').value.trim(),
+    title: $('title').value.trim(),
+    description: $('description').value.trim(),
+    deadline: $('deadline').value || null,
+    priority: $('priority').value
+  };
+
+  if (!payload.subject || !payload.title) return;
+
+  showMessage('taskMessage', 'Menyimpan tugas...');
+  $('saveTaskBtn').disabled = true;
+
+  let result;
+
+  if (editingTaskId) {
+    result = await sb
+      .from('tasks')
+      .update(payload)
+      .eq('id', editingTaskId)
+      .eq('class_id', profile.class_id);
+  } else {
+    payload.created_by = currentUser.id;
+    result = await sb.from('tasks').insert(payload);
+  }
+
+  $('saveTaskBtn').disabled = false;
+
+  if (result.error) {
+    showMessage('taskMessage', 'Gagal menyimpan: ' + result.error.message, true);
+    return;
+  }
+
+  showMessage('taskMessage', 'Tugas berhasil disimpan.');
+  resetTaskForm();
+  await loadTasks();
+});
+
+async function deleteTask(id) {
+  if (!canManageTasks()) return;
+  if (!confirm('Yakin ingin menghapus tugas ini?')) return;
+
+  const { error } = await sb
+    .from('tasks')
+    .delete()
+    .eq('id', id)
+    .eq('class_id', profile.class_id);
+
+  if (error) {
+    alert('Gagal menghapus tugas: ' + error.message);
+    return;
+  }
+
+  await loadTasks();
+}
+
+/* ==========================================
+   PROGRES PRIBADI ANGGOTA
+========================================== */
+
+async function setCompletion(taskId, done) {
+  const { error } = await sb
+    .from('task_completions')
+    .upsert({
+      task_id: taskId,
+      user_id: currentUser.id,
+      done: done,
+      updated_at: new Date().toISOString()
+    }, {
+      onConflict: 'task_id,user_id'
+    });
+
+  if (error) {
+    alert('Gagal menyimpan progres: ' + error.message);
+    await loadTasks();
+    return;
+  }
+
+  await loadTasks();
+}
+
+/* ==========================================
+   EKSPOR CADANGAN
+========================================== */
+
+$('exportBtn').addEventListener('click', () => {
+  const backup = {
+    application: 'TaskNote',
+    version: 1,
+    exported_at: new Date().toISOString(),
+    class_id: profile.class_id,
+    tasks: tasks,
+    my_progress: completions,
+    legacy_local_data: localStorage.getItem(LEGACY_KEY)
+  };
+
+  const blob = new Blob(
+    [JSON.stringify(backup, null, 2)],
+    { type: 'application/json' }
+  );
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'TaskNote-Cadangan-' + new Date().toISOString().slice(0, 10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+
+  showMessage('backupMessage', 'File cadangan berhasil dibuat.');
+});
+
+/* ==========================================
+   TAMPILAN APLIKASI
+========================================== */
+
+async function initializeApp(user) {
+  currentUser = user;
+
+  try {
+    await loadProfile();
+    await loadClasses();
+
+    const className = classes.find(c => c.id === profile.class_id)?.name || 'Kelas';
+    $('userInfo').textContent =
+      (profile.display_name || user.email) + ' · ' +
+      roleName(profile.role) + ' · ' + className;
+
+    $('roleBadge').textContent = roleName(profile.role).toUpperCase();
+
+    $('adminPanel').classList.toggle('hidden', profile.role !== 'admin');
+    $('taskFormPanel').classList.toggle('hidden', !canManageTasks());
+
+    setLoggedIn();
+    await loadTasks();
+
+  } catch (error) {
+    console.error(error);
+    setLoggedOut();
+    showMessage('loginMessage', 'Tidak dapat memuat akun: ' + error.message, true);
+    await sb.auth.signOut();
+  }
+}
+
+$('logoutBtn').addEventListener('click', async () => {
+  await sb.auth.signOut();
+});
+
+$('refreshBtn').addEventListener('click', async () => {
+  $('refreshBtn').disabled = true;
+  try {
+    await loadTasks();
+  } catch (error) {
+    alert('Gagal memperbarui data: ' + error.message);
+  }
+  $('refreshBtn').disabled = false;
+});
+
+['search', 'filter', 'sort'].forEach(id => {
+  $(id).addEventListener(id === 'search' ? 'input' : 'change', render);
+});
+
+/* ==========================================
+   DETEKSI SESI DAN PASSWORD RECOVERY
+========================================== */
+
+sb.auth.onAuthStateChange(async (event, session) => {
+  if (event === 'PASSWORD_RECOVERY') {
+    recoveryMode = true;
+    $('loginPanel').classList.add('hidden');
+    $('appPanel').classList.add('hidden');
+    $('resetPanel').classList.remove('hidden');
+    return;
+  }
+
+  if (session?.user) {
+    if (!recoveryMode) {
+      await initializeApp(session.user);
+    }
+  } else if (!recoveryMode) {
+    currentUser = null;
+    profile = null;
+    setLoggedOut();
+  }
+});
+
+/* ==========================================
+   PWA
+========================================== */
+
+let installPrompt = null;
+
+window.addEventListener('beforeinstallprompt', event => {
+  event.preventDefault();
+  installPrompt = event;
+  $('installBtn').classList.remove('hidden');
+});
+
+$('installBtn').addEventListener('click', async () => {
+  if (!installPrompt) return;
+
+  installPrompt.prompt();
+  await installPrompt.userChoice;
+
+  installPrompt = null;
+  $('installBtn').classList.add('hidden');
+});
+
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(console.error);
+  });
+}
+</script>
+</body>
+</html>
